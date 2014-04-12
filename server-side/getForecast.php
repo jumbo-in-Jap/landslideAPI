@@ -22,19 +22,19 @@ $testResponseTxt =
 "lat": -10.12,
 "lng": -48.62
 },
-{"country":"Japan",
-"place":"Tokyo",
+{"country":"China",
+"place":"MEI XIAN",
 "cause":"rain",
 "condition":"likely",
-"lat": 35.681382,
-"lng": 139.766084
+"lat": 24.12,
+"lng": 116.62
 },
-{"country":"Japan",
-"place":"Tokyo",
+{"country":"United States",
+"place":"SPIRIT OF ST LOUIS",
 "cause":"rain",
 "condition":"likely",
-"lat": 35.681382,
-"lng": 139.766084
+"lat": 38.62,
+"lng": -90.62
 }
 ],
 "returnCount":3,
