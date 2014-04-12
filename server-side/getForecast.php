@@ -1,4 +1,6 @@
 <?php
+require 'haneda_method.php';
+
 $query = array();
 if(isset($_GET['timeRange']))$query['timeRange'] = $_GET['timeRange'];
 if(isset($_GET['keyword']))$query['keyword'] = $_GET['keyword'];
@@ -40,5 +42,8 @@ $testResponseTxt =
 "returnCount":3,
 "queryKeyword":"tokyo"
 }';
-//$result = json_decode($testResponseTxt);
-echo $testResponseTxt;
+$result = json_decode($testResponseTxt);
+
+$res = getSortedBydist(38.62, -90.62, $result->results);
+
+echo json_encode($res);
