@@ -17,7 +17,7 @@ var manageGmaps = function(){
 	// setting
 	this.mapName     = '#map_canvas';
 	this.image       = 'img/alert.png';
-	this.forecastAPI = '../server-side/getForecast.php';
+	this.forecastAPI = 'http://www16095ui.sakura.ne.jp/landslideAPI/server-side/getForecast.php';
 	this.defaultLoc  = 'boston';
 	this.initZoom    = 10;
 	this.daySpan     = 1;
@@ -63,7 +63,9 @@ manageGmaps.prototype = {
 		// ).then(function(JSONdata){}
 		).done(function(JSONdata){
 			console.log('JSON load success!!');
-
+			console.log(JSON.parse(JSONdata));
+			JSONdata = JSON.parse(JSONdata);
+			
 			self.json = JSONdata;
 			console.dir(self.json['results']);
 			console.log(self.json['results'][0]);
