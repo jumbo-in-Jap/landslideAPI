@@ -2,6 +2,7 @@
 require 'haneda_method.php';
 require 'latlngFromKeyword.php';
 require 'trmmCrawler.php';
+header("Access-Control-Allow-Origin: *");
 
 $query = array();
 if(isset($_GET['timeRange'])){$query['timeRange'] = $_GET['timeRange'];}else{
