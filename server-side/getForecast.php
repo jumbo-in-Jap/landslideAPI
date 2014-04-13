@@ -1,5 +1,6 @@
 <?php
 require 'haneda_method.php';
+require 'latlngFromKeyword.php';
 
 $query = array();
 if(isset($_GET['timeRange']))$query['timeRange'] = $_GET['timeRange'];
@@ -44,6 +45,15 @@ $testResponseTxt =
 }';
 $result = json_decode($testResponseTxt);
 
-$res = getSortedBydist(38.62, -90.62, $result->results);
+if(isset($query['lat']))
+{
+	$result = getSortedBydist($query['lat'], $query['lng'], $result->results);
 
-echo json_encode($res);
+}else if(isset($query['keyword']))
+{
+	$geoRes = strAddrToLatLng($query['keyword']);
+	$result = getSortedBydist($geoRes['lat'], $geoRes['lng'], $result->results);
+}
+
+
+echo json_encode($result);

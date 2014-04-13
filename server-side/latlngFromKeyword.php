@@ -8,7 +8,6 @@ function strAddrToLatLng($strAddr)
          'http://maps.googleapis.com/maps/api/geocode/json'
         . '?address=' . ( $strAddr)
         . '&sensor=false';
-		echo $url;
     $strRes = file_get_contents($url
     );
     $aryGeo = json_decode( $strRes, TRUE );
@@ -18,5 +17,10 @@ function strAddrToLatLng($strAddr)
 
     $strLat = (string)$aryGeo['results'][0]['geometry']['location']['lat'];
     $strLng = (string)$aryGeo['results'][0]['geometry']['location']['lng'];
-    return $strLat . ',' . $strLng;
+	$res = array();
+	$res['lat'] = $strLat;
+	$res['lng'] = $strLng;
+	
+	return $res;
 }
+
