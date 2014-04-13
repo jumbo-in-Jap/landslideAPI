@@ -1,14 +1,17 @@
 <?php
 require 'haneda_method.php';
 require 'latlngFromKeyword.php';
+require 'trmmCrawler.php';
 
 $query = array();
-if(isset($_GET['timeRange']))$query['timeRange'] = $_GET['timeRange'];
+if(isset($_GET['timeRange'])){$query['timeRange'] = $_GET['timeRange'];}else{
+	$query['timeRange'] = 1;
+}
 if(isset($_GET['keyword']))$query['keyword'] = $_GET['keyword'];
 if(isset($_GET['lat']))$query['lat'] = $_GET['lat'];
 if(isset($_GET['lng']))$query['lng'] = $_GET['lng'];
 
-$result = array();
+$res = new stdClass();
 $testResponseTxt = 
 '{"results":[
 {"country":"Japan",
@@ -43,17 +46,22 @@ $testResponseTxt =
 "returnCount":3,
 "queryKeyword":"tokyo"
 }';
-$result = json_decode($testResponseTxt);
+
+$forecastData = getForecastData($query['timeRange']);
 
 if(isset($query['lat']))
 {
-	$result = getSortedBydist($query['lat'], $query['lng'], $result->results);
+	$forecastData = getSortedBydist($query['lat'], $query['lng'], $forecastData);
 
 }else if(isset($query['keyword']))
 {
 	$geoRes = strAddrToLatLng($query['keyword']);
-	$result = getSortedBydist($geoRes['lat'], $geoRes['lng'], $result->results);
+	$forecastData = getSortedBydist($geoRes['lat'], $geoRes['lng'], $forecastData);
 }
 
+$res->results = $forecastData;//json_decode($testResponseTxt);
+$res->returnCount = count($forecastData);
+$res->queryKeyword = $query['keyword'];
 
-echo json_encode($result);
+
+echo json_encode($res);
