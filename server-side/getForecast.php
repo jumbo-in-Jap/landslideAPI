@@ -60,8 +60,28 @@ if(isset($query['lat']))
 	$forecastData = getSortedBydist($geoRes['lat'], $geoRes['lng'], $forecastData);
 }
 
-$res->results = $forecastData;//json_decode($testResponseTxt);
-$res->returnCount = count($forecastData);
+//$res->results = $forecastData;//json_decode($testResponseTxt);
+$ditinctResult = array();
+foreach ($forecastData as $forecastData_key => $place) 
+{
+	$hasThisPlace = false;
+	foreach ($ditinctResult as $ditinctResult_key => $ditinctResult_place) 
+	{
+		if($ditinctResult_place->lat == $place->lat)
+		{
+			$hasThisPlace = true;
+			break;
+		}
+	}
+	
+	if(!$hasThisPlace)
+	{
+		array_push($ditinctResult, $place);		
+	}
+}
+
+$res->results = $ditinctResult;//json_decode($testResponseTxt);
+$res->returnCount = count($res->results);
 $res->queryKeyword = $query['keyword'];
 
 
