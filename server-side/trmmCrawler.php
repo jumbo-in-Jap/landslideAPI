@@ -2,7 +2,13 @@
 require_once 'simple_html_dom.php';
 
 // データ取得
-$html = file_get_html('http://trmm.gsfc.nasa.gov/trmm_rain/Events/latest_1_day_landslide.html');
+
+function getForecastData($forecastType)
+{
+	
+$html = file_get_html('http://trmm.gsfc.nasa.gov/trmm_rain/Events/latest_'.$forecastType.'_day_landslide.html');
+$contryHtml = file_get_contents('http://www6.kaiho.mlit.go.jp/isewan/image/flags/_flags.htm');
+
 $ret = $html->find('pre')[0]->plaintext;
 // 半角スペースで区切り
 $pices = explode(" ", $ret);
@@ -32,39 +38,86 @@ $json = json_encode($landslidePlaceArray);
 
 $rowCount = 0;
 $numericCount = 0;
-$makeLine = array();
-for($j = 0; $j < $wordNum; $j++){
-  if(is_array($makeLine[$rowCount]) === false){
-    $makeLine[$rowCount] = array();
-  }
-// $makeLine[$j] = $pices[$j];
-// echo $pices[$j]." ";
-// echo $makeLine[$rowCount]." ";
-
-//var_dump($pices[$j]);
-
-if(is_numeric($pices[$j])){
-var_dump($numericCount);
-     $numericCount++;
-var_dump($numericCount % 5);
-     if($numeriCount % 5 == 0){
-            $rowCount++;
-     }
+$forecastRows = array();
+foreach ($pices as $key => $word) {
+	if(!isset($forecastRows[$rowCount]))$forecastRows[$rowCount] = array();
+	array_push($forecastRows[$rowCount], $word);
+	
+	if(is_numeric($word))
+	{
+		$numericCount++;
+		if($numericCount % 5 == 0)$rowCount++;
+	}
 }
 
-var_dump($numericCount);
-//var_dump($pices[$j]);
-//var_dump($rowCount);
- array_push($makeLine[$rowCount], $pices[$j]);
-var_dump($makeLine);
-echo "<br />";
+//var_dump($forecastRows);
+$results = array();
 
+foreach ($forecastRows as $forecastRows_key => $forecast) 
+{	
+	$wordNum = count($forecast);
+	$endWordKey = $wordNum - 2;
+	$startWordKey = $wordNum - 5;
+	$countryNameFirstKey = 0;
+	$countryName = "";
+	
+	// 国名がどこから始まっているか取得
+	for($i = 0; $i < 3; $i++)
+	{
+		$searchWord = "";
+		for($j = $startWordKey + $i; $j <  $endWordKey; $j++)
+		{
+			$searchWord .= $forecast[$j];
+			$searchRes = strstr($contryHtml, $searchWord);
+			if($searchRes)
+			{
+				$countryNameFirstKey = $startWordKey + $i;
+				$countryName = $searchWord;
+			}
+		}
+	}
+	
+	// 国名からさかのぼって地名取得
+	$placeName = "";
+	$checkFlag = false;
+	foreach ($forecast as $forecast_key => $word) 
+	{
+		if($forecast_key == $countryNameFirstKey)break;
+		if($checkFlag)
+		{
+			$placeName .= $word;
+		}
+		if($word == "from")
+		{
+			$checkFlag = true;
+		}
+	}
+	
+	$condition = "";
+	foreach ($forecast as $forecast_key => $word) 
+	{
+		if("VERY")
+		{
+			$condition = "very likely";
+		}
+		if("LIKELY")
+		{
+			$condition = "likely";			
+		}
+	}
+	
+	
+	$res = new stdClass();
+	$res->country = $countryName;
+	$res->place = $placeName;
+	$res->cause = $forecast[2];
+	$res->condition = $condition;
+	$res->lat = $forecast[count($forecast) - 1];
+	$res->lng = $forecast[count($forecast) - 2];
+	
+	$results[] = $res;	
 }
 
-// var_dump($getContryName);
-
-// echo $json;
-// var_dump($json);
-// var_dump($pices);
-// var_dump($ret);
-
+//var_dump($results);
+return $results;
+}
