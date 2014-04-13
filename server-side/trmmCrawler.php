@@ -8,20 +8,16 @@ function getForecastData($forecastType)
     $contryHtml = file_get_contents('http://www6.kaiho.mlit.go.jp/isewan/image/flags/_flags.htm');
 
     $ret = $html->find('pre')[0]->plaintext;
-    // 半角スペースで区切り
-    $pices = explode(" ", $ret);
-    // 空配列の削除
-    $pices = array_filter($pices);
-    // 配列の再添字
-    $pices = array_values($pices);
+    // 半角スペースで区切る
+    $pieces = explode(" ", $ret);
+    $pieces = array_filter($pieces);
+    $pieces = array_values($pieces);
 
-    //データをJSON化
-    $wordNum = count($pices);
-
+    $wordNum = count($pieces);
     $rowCount = 0;
     $numericCount = 0;
     $forecastRows = array();
-    foreach ($pices as $key => $word) {
+    foreach ($pieces as $key => $word) {
         if(!isset($forecastRows[$rowCount]))$forecastRows[$rowCount] = array();
         array_push($forecastRows[$rowCount], $word);
 
