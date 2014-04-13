@@ -67,7 +67,7 @@ foreach ($forecastData as $forecastData_key => $place)
 	$hasThisPlace = false;
 	foreach ($ditinctResult as $ditinctResult_key => $ditinctResult_place) 
 	{
-		if($ditinctResult_place->lat == $place->lat)
+		if($ditinctResult_place->lat == $place->lat && $ditinctResult_place->lng == $place->lng)
 		{
 			$hasThisPlace = true;
 			break;
@@ -79,7 +79,6 @@ foreach ($forecastData as $forecastData_key => $place)
 		array_push($ditinctResult, $place);		
 	}
 }
-
 $res->results = $ditinctResult;//json_decode($testResponseTxt);
 $res->returnCount = count($res->results);
 $res->queryKeyword = $query['keyword'];
